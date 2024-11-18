@@ -14,33 +14,22 @@ const url = site ? new URL(path, site).href : null;
 ---
 
 <script>
-	const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-	function setDarkMode(document : any) {
-		const isDark = window.matchMedia(
-			"(prefers-color-scheme: dark)",
-		).matches;
-		const theme =
-			localStorage.getItem("F-Theme") || (isDark ? "dark" : "light");
+    const setDarkMode = (document: Document) => {
+        const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        const theme = localStorage.getItem("F-Theme") || (isDark ? "dark" : "light");
 
-		if(theme === "system"){
-			document.documentElement.classList[isDark ? "add" : "remove"]("dark");
-			document.documentElement.style.colorScheme = isDark ? "dark" : "light";
-			return;
-		}
+        const applyTheme = (mode: string) => {
+            document.documentElement.classList.toggle("dark", mode === "dark");
+            document.documentElement.style.colorScheme = mode;
+        };
 
-		document.documentElement.classList[theme === "dark" ? "add" : "remove"](
-			"dark",
-		);
-		document.documentElement.style.colorScheme =
-			theme === "dark" ? "dark" : "light";
-	}
+		theme === "system" ? applyTheme(isDark ? "dark" : "light") : applyTheme(theme);
 
-	setDarkMode(document);
+    };
 
-	document.addEventListener("astro:before-swap", (event) =>
-		setDarkMode(event.newDocument),
-	);
-	mediaQuery.addEventListener("change", () => setDarkMode(document));
+    setDarkMode(document);
+    document.addEventListener("astro:before-swap", (e) => setDarkMode(e.newDocument));
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", () => setDarkMode(document));
 </script>
 
 <html lang="en" translate="no">
@@ -51,7 +40,7 @@ const url = site ? new URL(path, site).href : null;
 
 		<meta charset="utf-8" />
 		<meta name="color-scheme" content="light dark" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<!--Fonts -->
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -85,6 +74,7 @@ const url = site ? new URL(path, site).href : null;
 			rel="stylesheet"
 			href="https://cdn.jsdelivr.net/gh/Lifo123/FlifoCSS@main/src/output/Flifo.css"
 		/>
+		<link rel="icon" type="image/svg+xml" href="/Logo.svg" />
 	</head>
 	<body class="f-col">
 		<slot />
